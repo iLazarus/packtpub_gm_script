@@ -38,22 +38,23 @@
   const tableConvert = (el) => {
     let h = "",
       b = "";
-    var table = $(el);
-    var thead = table.find("colgroup");
+    let table = $(el);
+    let thead = table.find("colgroup");
     if (thead.length > 0) {
-      var ths = thead.find("col");
+      let ths = thead.find("col");
       h += "|";
       ths.each(function () {
         h += "---|";
       });
       h += "\n";
     }
-    var tbody = table.find("tbody");
+
+    let tbody = table.find("tbody");
     if (tbody.length > 0) {
       let firstLine = true;
-      var trs = tbody.find("tr");
+      let trs = tbody.find("tr");
       trs.each(function () {
-        var tds = $(this).find("td");
+        let tds = $(this).find("td");
         b += "| ";
         tds.each(function () {
           b += $(this).text().trim() + " | ";
@@ -77,7 +78,11 @@
     // const exclude = "table p";
     // const tables = turndownPluginGfm.tables;
     // const gfm = turndownPluginGfm.gfm;
-    const service = new TurndownService()
+    const service = new TurndownService({
+      hr: "___",
+      codeBlockStyle: "fenced",
+      preformattedCode: true,
+    })
       .addRule("h1", {
         filter: ["h1"],
         replacement: (content) => "# " + content + "\n\n",
@@ -102,17 +107,19 @@
         md.includes("<tr") &&
         md.includes("<td")
       ) {
-        const tmp = md.split("\n").map((it) =>
-          it.includes("<table") &&
-          it.includes("<colgroup") &&
-          it.includes("<col") &&
-          it.includes("<tbody") &&
-          it.includes("<tr") &&
-          it.includes("<td")
-            ? tableConvert(it)
-            : it
-        );
-        data += tmp.join('\n');
+        const tmp = md
+          .split("\n")
+          .map((it) =>
+            it.includes("<table") &&
+            it.includes("<colgroup") &&
+            it.includes("<col") &&
+            it.includes("<tbody") &&
+            it.includes("<tr") &&
+            it.includes("<td")
+              ? tableConvert(it)
+              : it
+          );
+        data += tmp.join("\n");
       } else {
         data += md;
       }
